@@ -1,5 +1,3 @@
-# Cisco7to8converter
-this is python gui and cli project to convert password 7's (insecure) to password 8's (SHA-256)
 ==============================================================================
 Doug's Cisco Password 7 to Secret 8 converter
 ===============================================================================
@@ -11,11 +9,12 @@ This program will convert a cisco password 7 (insecure) into a
 This program will have two view interfaces, one Tkinter GUI and one CLI. 
   I want to have something easy for people to use, and something that can be 
   used from the Linux/Unix command line.  
-This program will optionally input a csv (data: hostname, IP Address, Username, password7)
+This program will input a csv (data: hostname, IP Address, Username, password7)
 This program will SSH to a router, and use that to generate the SHA256 secret8
 The csv will have a space res'd for the secret 8
 The program will add to the csv, (extra data elements: plaintext password and secret8. 
 Saving plaintext password might be turned off in production, or be an option.
+running the CLI program with only a "-p7 level7password" will return the plaintext password
 
 How It Works
 ===============================================================================
@@ -23,6 +22,7 @@ The program decrypts the password7 using cisco7decrypt by Richard Strnad.
 The way the program generates the password 8 is to ssh into a router, create a new
 test-username with the option for password8, test the new password by ssh-ing back 
 into the router to verify the new password8 works, then removing the test-username.
+It may be possible to use this program with GNS3, instead of having a physical router.
 
 What is Needed?
 ===============================================================================
@@ -30,6 +30,9 @@ This program requires install of Netmiko and Getpass
 This program will use argparse for the CLI view
 This program requires a Cisco Router or Switch with a ios that supports 
 "encryption algorithm sha256"
+It may be possible to use GNS3 as the device to create the SHA256 Hashes, which 
+could then be manually pasted into a device. Or GNS3 could be used to test 
+this program.
 
 This program uses another program as a sub-program.
 #cisco7decrypt
@@ -38,22 +41,34 @@ This program uses another program as a sub-program.
 # https://github.com/richardstrnad/cisco7decrypt
 #
 
+Command Line Options/Flags
+================================================================================
+-p7 password7 > This will ignore all the other options, and decrypt the 
+	password7 into plaintext and exit
 
-Examples
-===============================================================================
-An example beginning (unchanged) username configuration line:
+-gui >this flag will launch a Tkinter GUI (in the future) instead of running as a 
+		command line utility
+		
+-log > this will create a log file "Convert7to8_Log_datetime"
+	Plain Logging will save a copy of the lines that are added to the configuration
+	verbose logging (verbose flag) will add all the steps in the log, and will 
+		contain usernames and passwords
+		
+-logfile filename > same as log, but allows user to specify the filename to be used.		
 
-the line to be changed
-
-The end result
-
-Other Thoughts
-===============================================================================
-In learning about MVC architecture, I have come to understand that while all the 
-different sections (Model-View-Controller) are built into separate .py files, 
-they are all imported, executed, and managed by the one main module. The View 
-is written separately, but the main program imports the view and runs the 
-methods as if they were written inside the main program.
+-verbose >this flag will have the program display to the screen all the steps that 
+	are being taken to create and save the passwords in the target system. This
+		will display usernames and plaintext passwords.
+		
+-f filename > this option can be used in two ways. If IP addresses are provided
+	(below) then the new usernames/passwords will be appended to the bottom of 
+	the file.  If no ip addresses are specified, the program will go through the
+	IP addresses in the file and search for passwords and password 7's.
+	
+-ip IP Address > this option will let user set one or more IP Addresses. Each IP
+	address will need to have its own -ip
+	usage -ip 192.168.0.1 -ip 192.168.10.1 -ip 192.168.20.1 (this will have the 
+		program ssh into each of these three devices.
 
 Author
 ================================================================================
@@ -90,12 +105,16 @@ The views and conclusions contained in the software and documentation are those
 of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the <project name> project.
 
-Endnote
-================================================================================
 
+Examples
+===============================================================================
+An example beginning (unchanged) username configuration line:
+
+the line to be changed
+
+The end result
 #
-#
-My test usernames/passwords
+!My test usernames/passwords
 username dougs.test view SCADAview password Test01Passwd
 username Username01 priv 15 password Password01
 username Username02 priv 15 password Password02
@@ -139,3 +158,21 @@ Folder Structure
     │   view728.py
     │   __init__.py
     
+
+Other Thoughts
+===============================================================================
+In learning about MVC architecture, I have come to understand that while all the 
+different sections (Model-View-Controller) are built into separate .py files, 
+they are all imported, executed, and managed by the one main module. The View 
+is written separately, but the main program imports the view and runs the 
+methods as if they were written inside the main program.
+
+The CLI View will have the argpars parts and getpass. The view will pass those
+to the controller, which will open the netmiko connections
+
+
+Endnote
+================================================================================
+What is this world coming to? my readme is 150 lines? Who wants to spend that
+time reading about this? Hopefully the program is shorter and more 
+self-explanitory and nobody will need to open this up.
