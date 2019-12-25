@@ -1,3 +1,4 @@
+
 ==============================================================================
 Doug's Cisco Password 7 to Secret 8 converter
 ===============================================================================
@@ -15,6 +16,9 @@ The csv will have a space res'd for the secret 8
 The program will add to the csv, (extra data elements: plaintext password and secret8. 
 Saving plaintext password might be turned off in production, or be an option.
 running the CLI program with only a "-p7 level7password" will return the plaintext password
+
+
+	
 
 How It Works
 ===============================================================================
@@ -46,34 +50,58 @@ Command Line Options/Flags
 -p7 password7 > This will ignore all the other options, and decrypt the 
 	password7 into plaintext and exit
 
+-tr testrouter/sha-router > this option will pass in the IP address of the router
+	used to generate the sha256 secret8 password. If a network is running Radius,
+	the program will not be able to SSH into it to verify the sha256 is correct.
+	If a GNS3 router is used, it will need to be set up separately, beyond the
+	scope of my experience to support. If the target router is using local 
+	authentication, it can be used to verify the sha256 secret8 password.
+	
 -gui >this flag will launch a Tkinter GUI (in the future) instead of running as a 
 		command line utility
 		
 -log > this will create a log file "Convert7to8_Log_datetime"
 	Plain Logging will save a copy of the lines that are added to the configuration
 	verbose logging (verbose flag) will add all the steps in the log, and will 
-		contain usernames and passwords
+	contain usernames and passwords
 		
 -logfile filename > same as log, but allows user to specify the filename to be used.		
 
 -verbose >this flag will have the program display to the screen all the steps that 
 	are being taken to create and save the passwords in the target system. This
-		will display usernames and plaintext passwords.
+	will display usernames and plaintext passwords.
 		
--f filename > this option can be used in two ways. If IP addresses are provided
-	(below) then the new usernames/passwords will be appended to the bottom of 
-	the file.  If no ip addresses are specified, the program will go through the
-	IP addresses in the file and search for passwords and password 7's.
+-verify > this flag will ssh into the test router to verify the username/secret8
+	combination are working.
+		
+-f filename > this option imports a csv file. The first row is headers (not data)
+	If included, the second row will be used as the test router.
+	this option can be used in two ways. If IP addresses are provided
+	(below 2nd row) then the new usernames/passwords will be appended to the 
+	bottom of the file.  If no ip addresses are specified, the program will go 
+	through the IP addresses in the file and search for passwords and password 7's.
 	
 -ip IP Address > this option will let user set one or more IP Addresses. Each IP
 	address will need to have its own -ip
 	usage -ip 192.168.0.1 -ip 192.168.10.1 -ip 192.168.20.1 (this will have the 
 		program ssh into each of these three devices.
 
+Should I have an option to check and apply service password-encryption if it is
+    missing?
+Should I have an option to add a default username/password if missing?	
+
+Sample Usage
+===============================================================================
+*find the plaintext for a given password 7
+python main728.py -p7 13351601181B0B382F747B
+
+*check a single router ip
+python main728.py -ip 192.168.20.1
+	
 Author
 ================================================================================
 Douglas J. Sheehan
-
+Oct-Dec 2019
 
 License and Copyright
 ================================================================================
@@ -138,26 +166,19 @@ username Username06 privilege 15 password 7 107E080A16001D1908547C
 username Username07 privilege 15 secret 8 $8$F/w85a6wmpTYZk$ZQOonJGorZG9GMhX2eMUtChZmumf/wWRglqt8XFUUOk
 !
 Folder Structure
-\CONVERT728\
-│   728main.py
+\CONVERT728
+│   main728.py
 │   README.rst
-│   TestImports.py
-│   TestNetmiko.py
 │   __init__.py
 │
-└──\convert7to8
-    │   728controller.py
-    │   728data.csv
-    │   728model.py
-    │   728GUIview.py
-    │   728CLIview.py
+└───convert7to8PKG
     │   cisco7decrypt.py
-    │   cisco7decrypt2.py
-    │   testdata728.csv
-    │   testdataprep-728.txt
+    │   controller728.py
+    │   model728.py
     │   view728.py
-    │   __init__.py
-    
+    │   view728CLI.py
+    └─  __init__.py
+     
 
 Other Thoughts
 ===============================================================================
@@ -170,9 +191,18 @@ methods as if they were written inside the main program.
 The CLI View will have the argpars parts and getpass. The view will pass those
 to the controller, which will open the netmiko connections
 
+Network Object Class [index][hostname][ip address][log][verbose]
+	[orig username][test username][password 7][plaintext][secret 8][notes and errors]
+	
+Network Object is the basic data object for my program. Hostname should be unique in a network.
+            Hostname is manditory. IP is manditory. A hostname can have multiple IP's, but an IP can only 
+            be assigned to one hostname. Log and verbose are optional. Login username and password for the 
+            device (IP) are handled by the main program and never saved to a file. A network object might not 
+            have any password 7's, in which case "No Password 7" will be in the notes field.
+			Each network object will have a numerical index, for sorting in the future. 
 
 Endnote
 ================================================================================
-What is this world coming to? my readme is 150 lines? Who wants to spend that
+What is this world coming to? my readme is over 200 lines? Who wants to spend that
 time reading about this? Hopefully the program is shorter and more 
-self-explanitory and nobody will need to open this up.
+self-explanatory and nobody will need to open this up.
