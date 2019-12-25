@@ -42,7 +42,7 @@ This program uses another program as a sub-program.
 #cisco7decrypt
 #by Richard Strnad
 #2019 oct 26th -retrieved from
-# https://github.com/richardstrnad/cisco7decrypt
+ https://github.com/richardstrnad/cisco7decrypt
 #
 
 Command Line Options/Flags
@@ -183,7 +183,8 @@ username Username06 privilege 15 password 7 107E080A16001D1908547C
 username Username07 privilege 15 secret 8 $8$F/w85a6wmpTYZk$ZQOonJGorZG9GMhX2eMUtChZmumf/wWRglqt8XFUUOk
 
 !
-Folder Structure
+
+# My Folder Structure
 
 \CONVERT728
 
