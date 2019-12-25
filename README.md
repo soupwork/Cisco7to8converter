@@ -182,18 +182,31 @@ username Username07 privilege 15 secret 8 $8$F/w85a6wmpTYZk$ZQOonJGorZG9GMhX2eMU
 
 !
 Folder Structure
+
 \CONVERT728
+
 │   main728.py
+
 │   README.rst
+
 │   __init__.py
+
 │
+
 └───convert7to8PKG
+
     │   cisco7decrypt.py
+    
     │   controller728.py
+    
     │   model728.py
+    
     │   view728.py
+    
     │   view728CLI.py
+    
     └─  __init__.py
+    
      
 
 Other Thoughts
@@ -207,7 +220,9 @@ methods as if they were written inside the main program.
 The CLI View will have the argpars parts and getpass. The view will pass those
 to the controller, which will open the netmiko connections
 
-Network Object Class [index][hostname][ip address][log][verbose]
+Network Object Class 
+[index][hostname][ip address][log][verbose]
+
 	[orig username][test username][password 7][plaintext][secret 8][notes and errors]
 	
 Network Object is the basic data object for my program. Hostname should be unique in a network.
