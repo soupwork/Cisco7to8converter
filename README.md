@@ -93,10 +93,12 @@ Should I have an option to add a default username/password if missing?
 Sample Usage
 ===============================================================================
 *find the plaintext for a given password 7
-python main728.py -p7 13351601181B0B382F747B
+
+c:\> python main728.py -p7 13351601181B0B382F747B
 
 *check a single router ip
-python main728.py -ip 192.168.20.1
+
+c:\> python main728.py -ip 192.168.20.1
 	
 Author
 ================================================================================
