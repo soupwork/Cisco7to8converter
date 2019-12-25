@@ -144,26 +144,42 @@ The end result
 #
 !My test usernames/passwords
 username dougs.test view SCADAview password Test01Passwd
+
 username Username01 priv 15 password Password01
+
 username Username02 priv 15 password Password02
+
 username Username03 priv 15 password Password03
+
 username Username04 priv 15 password Password04
+
 username Username05 priv 15 password Password05
+
 username Username06 priv 15 password Password06
+
 username Username07 priv 15 algorithm-type sha256 secret Password07
 
 ## after service password-encryption
 
 !
 username doug.sheehan privilege 15 secret 8 $8$6cFk1.H6SH83c.$R7fbS5LX68PT6PZoa/ZcIgS1ctmxw4pkajg/L/Ule/g
+
 username dougs.test privilege 15 password 7 09784B1A0D5546220A1F173D2F
+
 username Username01 privilege 15 password 7 053B071C325B411B1D5546
+
 username Username02 privilege 15 password 7 097C4F1A0A1218000F5C56
+
 username Username03 privilege 15 password 7 13351601181B0B382F747B
+
 username Username04 privilege 15 password 7 12290404011C03162E7B70
+
 username Username05 privilege 15 password 7 08114D5D1A0E0A05165B59
+
 username Username06 privilege 15 password 7 107E080A16001D1908547C
+
 username Username07 privilege 15 secret 8 $8$F/w85a6wmpTYZk$ZQOonJGorZG9GMhX2eMUtChZmumf/wWRglqt8XFUUOk
+
 !
 Folder Structure
 \CONVERT728
