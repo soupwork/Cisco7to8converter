@@ -14,7 +14,7 @@ The program can also be used to only input a password 7 and display a plaintext 
 #
 #Sample input lines
 #
-#python main728.py -f test.text -ip 192.168.0.1 -ip 192.168.1.1 -ip 192.168.20.1
+# python main728.py -f test.csv -ip 192.168.0.1 -ip 192.168.1.1 -ip 192.168.20.1
 # python main728.py -p7 111918160405041E007A7A
 # python main728.py -p7 13351601181B0B382F747B
 #
@@ -53,8 +53,11 @@ class CLIparams():
 
         cliargs = inputargs.parse_args()
         self.filename = cliargs.f
+        #testing
+        self.filename = "testdata728.csv"
         if self.filename:
-            checkFilename(self.filename)
+            checkFile = model.Filechecks(self.filename)
+            checkFile.checkFilename()
 
         self.pass7 = cliargs.p7
         self.gui = cliargs.gui
