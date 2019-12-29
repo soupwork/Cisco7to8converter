@@ -87,6 +87,7 @@ Command Line Options/Flags
 Should I have an option to check and apply service password-encryption if it is
     missing?
 Should I have an option to add a default username/password if missing?	
+
 CSV File Headers
 ===============================================================================
 The first row of the csv file is assumed to be headers. The second row is
