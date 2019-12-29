@@ -58,6 +58,8 @@ class CLIparams():
         if self.filename:
             checkFile = model.Filechecks(self.filename)
             checkFile.checkFilename()
+            self.initialDict=checkFile.retDefaultDict()
+            print("initial dictionary is ", self.initialDict)
 
         self.pass7 = cliargs.p7
         self.gui = cliargs.gui
@@ -87,11 +89,9 @@ class CLIparams():
         #self.verbose = true
         #self.log = true
         #self.logfile = cliargs.logfile
-        self.ip = "192.168.20.1"
+        #self.ip = "192.168.20.1"
 
-    def checkFilename(self):
-        print("check filename ", self.filename)
-
+    
     def setOptiontuple(self):
         
         optiontuple=(self.verbose,self.log,self.filename,self.ip)

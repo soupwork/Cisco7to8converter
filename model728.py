@@ -83,7 +83,11 @@ class Filechecks():
 
         print("data headers should be ", self.dataheader)
     
-
+    def retDefaultDict(self):
+        """this method will pass the blank or tr dictionary
+            back to the main to create a Network Object """
+        print("return default dictionary is", self.headerDict)
+        return(self.headerDict)
 
     def createFile(self):
         print ("this will create a file ", self.filename)
@@ -166,7 +170,7 @@ class Filechecks():
             elif miscount > 0:
                 print("some columns missing, will add additional columns")
             
-            
+        self.headerDict = headerdict   
         #end file check on filename    
 
 
@@ -179,7 +183,7 @@ class Filechecks():
             is second row the test router?
             how many rows is the file? can I load in memory or take it in chunks?
         """
-        self.path = path
+        
         #testing
         #self.path = 'e:/dougsprogs/convert7to8/convert728/'
 
@@ -223,12 +227,12 @@ class Filechecks():
 if __name__ == "__main__":
     print("starting from model")
     
-    #testfilename="e:/dougsprogs/Convert728/convert7to8PKG/testdata728.csv"
+    testfilename="e:/dougsprogs/Convert728/convert7to8PKG/testdata728.csv"
     #testfilename="e:\dougsprogs\Convert728\convert7to8PKG\\testdata728.csv"
     #testfilename="testdata728.csv"  #this is a real file with some data
     #testfilename="testblank728.csv"  #this is a real file with no data
     #testfilename="testempty728.csv" #this is not an existing file
-    testfilename=""                 #this is an empty filename
+    #testfilename=""                 #this is an empty filename
     #dataobject=convert_model(testfilename)
     #password7="111918160405041E007A7A"
     #plaintext=dataobject.decrypt(password7)
@@ -236,4 +240,5 @@ if __name__ == "__main__":
     #testobj=NetworkObject(ip="192.168.20.1", verbose=True)
     checkthis=Filechecks(testfilename)
     checkthis.checkFilename()
+    checkthis.retDefaultDict()
     # testobj = NetworkObjectGroup(filename = "")
