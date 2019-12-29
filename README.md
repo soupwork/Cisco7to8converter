@@ -1,7 +1,7 @@
 
-==============================================================================
+===============================================================
 Doug's Cisco Password 7 to Secret 8 converter
-===============================================================================
+===============================================================
 
 Description
 ===============================================================================
@@ -89,6 +89,14 @@ Command Line Options/Flags
 Should I have an option to check and apply service password-encryption if it is
     missing?
 Should I have an option to add a default username/password if missing?	
+CSV File Headers
+===============================================================================
+The first row of the csv file is assumed to be headers. The second row is
+assumed to be the test router to create and test the Secret8/SHA256.
+The 12 column headers should be :
+'HOSTNAME','IPADDRESS','LOG','VERBOSE','ORIGUSERNAME','TESTUSERNAME', 
+'PASSWORD7','PLAINTEXT','SECRET8','CHANGE','VERIFIED','NOTES-AND-ERRORS'
+
 
 Sample Usage
 ===============================================================================
