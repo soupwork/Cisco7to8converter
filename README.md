@@ -235,8 +235,19 @@ Network Object is the basic data object for my program. Hostname should be uniqu
             have any password 7's, in which case "No Password 7" will be in the notes field.
 			Each network object will have a numerical index, for sorting in the future. 
 
+
 Endnote
 ================================================================================
 What is this world coming to? my readme is over 200 lines? Who wants to spend that
 time reading about this? Hopefully the program is shorter and more 
 self-explanatory and nobody will need to open this up.
+
+If I had known how long this program was going to take me, I probably would have 
+gone looking for a less intensive hobby. Of the things that are taking a lot of 
+time, worthy of note is learning new things, learning things I had learned before
+and was sure that I had understood and mastered, going to ridiculous extremes to make
+sure the program is operating exactly as expected, and a multitude of test datum
+being sent to individual modules and functions before testing the main program, and 
+testing the integration of all elements through the main program. I'll also add thinking.
+I've done a lot of thinking, pondering, considering, what the best or most correct way,
+or what will be the easiest for someone to help with troubleshooting.
