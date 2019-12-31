@@ -16,7 +16,7 @@ class NetworkObject():
 	[orig username][test username][password 7][plaintext][secret 8][notes and errors]
         """ 
 
-    def __init__ (self, hostname, ip, index=0, verbose=False,log=False,append=False, *args, **kwargs):
+    def __init__ (self, netobjDict):
         """Network Object is the basic data object for this program. Hostname should be unique in a network.
             Hostname is manditory. IP is manditory. A hostname can have multiple IP's, but an IP can only 
             be assigned to one hostname. Log and verbose are optional. Login username and password for the 
@@ -43,13 +43,47 @@ class NetworkObject():
 
 
 class NetworkObjectGroup():
-    "The network Object Group will have a filename and list of ip addresses"
-    def __init__(self, filename, *args, **kwargs):
-       
+    """
+    input needs filename and initial dictionary
+    Create list with up to 500 elements from filename. Find length of file.
+    create pointer for list, create pointer for file if longer than 500 rows
+    load next 500 rows if needed
+    keep track of updates to plaintext, secret 8, notes, etc.
+    update log/verbose if selected.
+    """
+    def __init__(self, filename, initDict):
+        """
+          init needs a filename and the initial dictionary. 
+          create list of up to 500 rows from filename. create pointer for list
+          return dict with new row data.
+        """
+
         self.filename = filename
         print("filename is ",filename)
- #       with open(filename):
-           # pass
+        self.workingDict = initDict
+        self.workingList = []
+        self.rowcount = 0
+        self.rowpointer
+        maxlines = 500 # maximum number of lines in the working list
+
+        with open(self.filename, 'r') as readfile:
+            rowstring = readfile.readline() #first read should be the headers
+            while rowstring : #rowstring will be -1 at the end of the file
+                rowstring = readfile.readline() #rowstring false(-1) when line is blank
+                rowcount += 1
+                if rowstring and rowcount < maxlines:
+                    self.workinglist.append(rowstring)
+                    print("new list entry ", rowstring)
+
+                     
+              
+
+           
+
+    def nextRow(self):
+        """ this will load the next row into the workingDict and pass back to main"""
+        pass
+
 
     
 
@@ -58,7 +92,8 @@ class Logmessages():
         timestamp = datetime()
         timestamp = datetime.now()
         print ("timestamp is ", timestamp.now())
-        """
+    """
+    pass
     
 
 
@@ -84,7 +119,7 @@ class Filechecks():
         print("data headers should be ", self.dataheader)
     
     def retDefaultDict(self):
-        """this method will pass the blank or tr dictionary
+        """this method will pass the blank or test router dictionary
             back to the main to create a Network Object """
         print("return default dictionary is", self.headerDict)
         return(self.headerDict)
@@ -222,6 +257,7 @@ class Filechecks():
             """
             print("this is an existing file")
             self.getHeaderDict()
+
 
 
 if __name__ == "__main__":
