@@ -1,5 +1,7 @@
+==============================================================================
 Doug's Cisco Password 7 to Secret 8 converter
-==============================================
+===============================================================================
+updated 2020 Jan 13th
 
 Description
 ===============================================================================
@@ -7,13 +9,16 @@ This program will convert a cisco password 7 (insecure) into a
   cisco secret 8 (sha256)
 This program will have two view interfaces, one Tkinter GUI and one CLI. 
   I want to have something easy for people to use, and something that can be 
-  used from the Linux/Unix command line.  
-This program will input a csv (data: hostname, IP Address, Username, password7)
+  used from the Linux/Unix command line.  The GUI will be the last thing added,
+  so if it isn't too much to ask, don't hold your breath.
+This program will input a csv or have router params passed in from CLI.
 This program will SSH to a router, and use that to generate the SHA256 secret8
 The csv will have a space res'd for the secret 8
-The program will add to the csv, (extra data elements: plaintext password and secret8. 
+The program will add to the csv, some data elements: 
+  plaintext password and secret8. 
 Saving plaintext password might be turned off in production, or be an option.
-running the CLI program with only a "-p7 level7password" will return the plaintext password
+running the CLI program with only a "-p7 level7password" will return the
+  plaintext password
 
 
 	
@@ -22,25 +27,26 @@ How It Works
 ===============================================================================
 The program decrypts the password7 using cisco7decrypt by Richard Strnad.
 The way the program generates the password 8 is to ssh into a router, create a new
-test-username with the option for password8, test the new password by ssh-ing back 
-into the router to verify the new password8 works, then removing the test-username.
+test-username with the option for secret8, test the new password by ssh-ing back 
+into the router to verify the new secret8 works, then removing the test-username.
 It may be possible to use this program with GNS3, instead of having a physical router.
+
 
 What is Needed?
 ===============================================================================
 This program requires install of Netmiko and Getpass
-This program will use argparse for the CLI view
+This program will use argparse getpass in the CLI view
 This program requires a Cisco Router or Switch with a ios that supports 
 "encryption algorithm sha256"
 It may be possible to use GNS3 as the device to create the SHA256 Hashes, which 
 could then be manually pasted into a device. Or GNS3 could be used to test 
-this program.
+this program. I am no expert in GNS3, so my help will be limited.
 
 This program uses another program as a sub-program.
 #cisco7decrypt
 #by Richard Strnad
 #2019 oct 26th -retrieved from
- https://github.com/richardstrnad/cisco7decrypt
+# https://github.com/richardstrnad/cisco7decrypt
 #
 
 Command Line Options/Flags
@@ -56,7 +62,7 @@ Command Line Options/Flags
 	authentication, it can be used to verify the sha256 secret8 password.
 	
 -gui >this flag will launch a Tkinter GUI (in the future) instead of running as a 
-		command line utility
+	command line utility
 		
 -log > this will create a log file "Convert7to8_Log_datetime"
 	Plain Logging will save a copy of the lines that are added to the configuration
@@ -68,9 +74,12 @@ Command Line Options/Flags
 -verbose >this flag will have the program display to the screen all the steps that 
 	are being taken to create and save the passwords in the target system. This
 	will display usernames and plaintext passwords.
-		
--verify > this flag will ssh into the test router to verify the username/secret8
-	combination are working.
+	
+-change > This flag is a request to have the program change the password on the
+	remote router.
+	
+-verify > this flag will ssh into the remote router to verify the username/secret8
+	combination are working after being changed.
 		
 -f filename > this option imports a csv file. The first row is headers (not data)
 	If included, the second row will be used as the test router.
@@ -82,7 +91,7 @@ Command Line Options/Flags
 -ip IP Address > this option will let user set one or more IP Addresses. Each IP
 	address will need to have its own -ip
 	usage -ip 192.168.0.1 -ip 192.168.10.1 -ip 192.168.20.1 (this will have the 
-		program ssh into each of these three devices.
+	program ssh into each of these three devices.
 
 Should I have an option to check and apply service password-encryption if it is
     missing?
@@ -92,7 +101,7 @@ CSV File Headers
 ===============================================================================
 The first row of the csv file is assumed to be headers. The second row is
 assumed to be the test router to create and test the Secret8/SHA256.
-The 12 column headers should be :
+The 12 headers should be :
 'HOSTNAME','IPADDRESS','LOG','VERBOSE','ORIGUSERNAME','TESTUSERNAME', 
 'PASSWORD7','PLAINTEXT','SECRET8','CHANGE','VERIFIED','NOTES-AND-ERRORS'
 
@@ -100,12 +109,10 @@ The 12 column headers should be :
 Sample Usage
 ===============================================================================
 *find the plaintext for a given password 7
-
-c:\> python main728.py -p7 13351601181B0B382F747B
+python main728.py -p7 13351601181B0B382F747B
 
 *check a single router ip
-
-c:\> python main728.py -ip 192.168.20.1
+python main728.py -ip 192.168.20.1
 	
 Author
 ================================================================================
@@ -153,70 +160,42 @@ The end result
 #
 !My test usernames/passwords
 username dougs.test view SCADAview password Test01Passwd
-
 username Username01 priv 15 password Password01
-
 username Username02 priv 15 password Password02
-
 username Username03 priv 15 password Password03
-
 username Username04 priv 15 password Password04
-
 username Username05 priv 15 password Password05
-
 username Username06 priv 15 password Password06
-
 username Username07 priv 15 algorithm-type sha256 secret Password07
 
 ## after service password-encryption
 
 !
 username doug.sheehan privilege 15 secret 8 $8$6cFk1.H6SH83c.$R7fbS5LX68PT6PZoa/ZcIgS1ctmxw4pkajg/L/Ule/g
-
 username dougs.test privilege 15 password 7 09784B1A0D5546220A1F173D2F
-
 username Username01 privilege 15 password 7 053B071C325B411B1D5546
-
 username Username02 privilege 15 password 7 097C4F1A0A1218000F5C56
-
 username Username03 privilege 15 password 7 13351601181B0B382F747B
-
 username Username04 privilege 15 password 7 12290404011C03162E7B70
-
 username Username05 privilege 15 password 7 08114D5D1A0E0A05165B59
-
 username Username06 privilege 15 password 7 107E080A16001D1908547C
-
 username Username07 privilege 15 secret 8 $8$F/w85a6wmpTYZk$ZQOonJGorZG9GMhX2eMUtChZmumf/wWRglqt8XFUUOk
-
 !
-
-# My Folder Structure
-
+Folder Structure
 \CONVERT728
-
+│   cisco7decrypt.py
 │   main728.py
-
 │   README.rst
-
 │   __init__.py
-
 │
-
 └───convert7to8PKG
-
-    │   cisco7decrypt.py
-    
+    │   cisco7decrypt2.py
     │   controller728.py
-    
     │   model728.py
-    
+    │   testdata728.csv
     │   view728.py
-    
     │   view728CLI.py
-    
-    └─  __init__.py
-    
+    └──__init__.py
      
 
 Other Thoughts
@@ -230,11 +209,8 @@ methods as if they were written inside the main program.
 The CLI View will have the argpars parts and getpass. The view will pass those
 to the controller, which will open the netmiko connections
 
-Network Object Class 
-[index][hostname][ip address][log][verbose]
-
+Network Object Class [index][hostname][ip address][log][verbose]
 	[orig username][test username][password 7][plaintext][secret 8][notes and errors]
-	
 Network Object is the basic data object for my program. Hostname should be unique in a network.
             Hostname is manditory. IP is manditory. A hostname can have multiple IP's, but an IP can only 
             be assigned to one hostname. Log and verbose are optional. Login username and password for the 
@@ -242,10 +218,9 @@ Network Object is the basic data object for my program. Hostname should be uniqu
             have any password 7's, in which case "No Password 7" will be in the notes field.
 			Each network object will have a numerical index, for sorting in the future. 
 
-
 Endnote
 ================================================================================
-What is this world coming to? my readme is over 200 lines? Who wants to spend that
+What is this world coming to? my readme is over 250 lines? Who wants to spend that
 time reading about this? Hopefully the program is shorter and more 
 self-explanatory and nobody will need to open this up.
 
