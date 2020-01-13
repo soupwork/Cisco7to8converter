@@ -15,8 +15,9 @@ The program can also be used to only input a password 7 and display a plaintext 
 #
 #Sample input lines
 #
+# python main728.py -f "e:\dougsprogs\Convert728\convert7to8PKG\\testdata728.csv"
 # python main728.py -f test.csv -ip 192.168.0.1 -ip 192.168.1.1 -ip 192.168.20.1
-# python main728.py -p7 111918160405041E007A7A
+# python main728.py -help
 # python main728.py -p7 13351601181B0B382F747B
 #
 import argparse
@@ -94,10 +95,7 @@ class CLIparams():
         #self.ip = "192.168.20.1"
 
     
-    def setOptiontuple(self):
-        
-        optiontuple=(self.verbose,self.log,self.filename,self.ip)
-        return(optiontuple)
+   
 
     def showPW7(self):
          print("show PW7")
@@ -111,11 +109,11 @@ if __name__ == "__main__":
     print("starting from main")
     options=CLIparams()
     print("options ",options)
-    print("manually setting options for testing")
-    options.setTestOptions()
-    
-    optionsTuple=options.setOptiontuple()
 
+    #print("manually setting options for testing")
+    #options.setTestOptions()
+    
+   
 
     if options.pass7:
         print("Program is decrypting")
@@ -123,21 +121,43 @@ if __name__ == "__main__":
 
 
     else:   #password7 option does not have a value 
-        if options.filename:
-             checkFile = model.Filechecks(options.filename)
-             checkFile.checkFilename()
-             initialDict=checkFile.retDefaultDict()
-             print("initial dictionary is ", initialDict)
+        mainmodel = model.InitializeModel(options.filename)   
 
-        uid=viewCLI.LoginDetails() #login details is part of "view"
-        loginID=uid.getLoginID()
+        #testing 12 Jan 2020
+        options.tr="192.168.20.1"
+        #end test assignment
+        
+        view = viewCLI.UserPrompts() #login details is part of "view"
+        loginID=view.getLoginID()
         print("login id is ", loginID)
+
+
+        if options.ip and options.filename:
+            initialDict=mainmodel.retDefaultDict()
+            print("initial dictionary is ", initialDict)
+
+        elif options.ip: # no filename
+            testfilename = mainmodel.suggestFilename()
+            print("suggested filename ", testfilename)
+            createYN = view.createFileYN(testfilename)
+            if createYN.uppper() == "Y":
+                print("alrighty then. i'll create the file ",filename)
+
+            else:
+                print("the program will go on without creating the file")    
+
+
+        else: # filename but no IP Addresses     
+            pass
+
+             
+        
         if not options.tr:
-             options.tr = options.ip 
+            options.tr = options.ip 
 
-        testcontroller=controller.RemoteRouter(options.ip,loginID,options.tr)
-        testcontroller.testconnectToRouter(options.tr)
 
+        testcontroller=controller.RemoteRouter(loginID,options.tr)
+        hostname = testcontroller.getHostname(options.tr)
   
         #print("plaintext is ",checkpw) #this only applies for -p7
 
