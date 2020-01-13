@@ -8,15 +8,16 @@ import netmiko
 
 class RemoteRouter():
     """create a router object for Netmiko. """
-    def __init__(self, ipaddy,loginID,testrouter):
+    def __init__(self,loginID,testrouter):
         self.testrouter = testrouter
-        self.ipaddy=ipaddy
+        self.ipaddy=testrouter
         print("testrouter is ",self.testrouter)
         self.loginuser=loginID[0]
         self.loginpass=loginID[1]
-
+        
+        
   
-    def testconnectToRouter(self,ipaddy):
+    def getHostname(self,ipaddy):
         cisco = {
             'device_type': 'cisco_ios',
             'host': ipaddy,
@@ -90,6 +91,8 @@ if __name__ == "__main__":
     print ("controller is main")
     testloginID=('doug.sheehan','De34rfvc')
     print('username ', testloginID[0])
-    testrouter=RemoteRouter('192.168.20.1', testloginID, '192.168.20.1')
-    testrouter.testconnectToRouter()
+    testrouterIP="192.168.20.1"
+    testrouter = RemoteRouter(testloginID, testrouterIP)
+    hostname = testrouter.getHostname(testrouterIP)
+    print('hostname of test router is', hostname)
 
