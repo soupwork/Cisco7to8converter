@@ -17,6 +17,7 @@ The program can also be used to only input a password 7 and display a plaintext 
 #
 # python main728.py -f "e:\dougsprogs\Convert728\convert7to8PKG\\testdata728.csv"
 # python main728.py -f test.csv -ip 192.168.0.1 -ip 192.168.1.1 -ip 192.168.20.1
+# python main728.py -f test.csv -ip 192.168.0.1 -tr 192.168.20.1
 # python main728.py -help
 # python main728.py -p7 13351601181B0B382F747B
 #
@@ -47,7 +48,7 @@ class CLIparams():
         inputargs.add_argument('-logfile', help='same as log, but allows user to set filename')    
         inputargs.add_argument('-verbose',action='store_true')
 
-        inputargs.add_argument('-f', action='store_true',
+        inputargs.add_argument('-f', action='store',
             help='This option allowers user to specify a file for input or append.')
 
         inputargs.add_argument('-change', action='store_true', 
@@ -72,14 +73,18 @@ class CLIparams():
         self.logfile = cliargs.logfile
         if self.logfile: #if a logfile is provided, logging must be desired
             self.log=True
-        self.ip = cliargs.ip
+        #cliargs.ip will be a list if one or more multiple entries
+        self.iplist = cliargs.ip
         #self.
         print("cliargs is ", cliargs)
         print("Testrouter/SHArouter is ", self.tr)
         print(" verbose is ", self.verbose)
         print("filename is ", self.filename)
         print("CLI Password 7 is ", self.pass7)
-        print("ip is ", self.ip)
+        print("iplist is ", self.iplist)
+        if self.iplist :
+            print("first IP is ", self.iplist[0])
+            print(len(self.iplist),"ip addresses taken from command line")
 
     def setTestOptions(self):
         """this is manually setting options that ought to be passed in from the command line.
@@ -132,19 +137,21 @@ if __name__ == "__main__":
         print("login id is ", loginID)
 
 
-        if options.ip and options.filename:
+        if options.iplist and options.filename:
             initialDict=mainmodel.retDefaultDict()
             print("initial dictionary is ", initialDict)
+            if not options.tr:
+                options.tr = options.iplist[0] 
 
-        elif options.ip: # no filename
+        elif options.iplist: # no filename
             testfilename = mainmodel.suggestFilename()
             print("suggested filename ", testfilename)
             createYN = view.createFileYN(testfilename)
             if createYN.uppper() == "Y":
-                print("alrighty then. i'll create the file ",filename)
+                print("program will create the file ",filename)
 
             else:
-                print("the program will go on without creating the file")    
+                print("alrighty then. The program will go on without creating the file")    
 
 
         else: # filename but no IP Addresses     
@@ -152,8 +159,7 @@ if __name__ == "__main__":
 
              
         
-        if not options.tr:
-            options.tr = options.ip 
+       
 
 
         testcontroller=controller.RemoteRouter(loginID,options.tr)
