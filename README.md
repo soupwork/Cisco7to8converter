@@ -79,7 +79,8 @@ Command Line Options/Flags
 	remote router.
 	
 -verify > this flag will ssh into the remote router to verify the username/secret8
-	combination are working after being changed.
+	combination are working after being changed. Since this is changing local
+	usernames/passwords, it won't work with TACACS or Radius.
 		
 -f filename > this option imports a csv file. The first row is headers (not data)
 	If included, the second row will be used as the test router.
@@ -113,6 +114,7 @@ python main728.py -p7 13351601181B0B382F747B
 
 *check a single router ip
 python main728.py -ip 192.168.20.1
+
 	
 Author
 ================================================================================
