@@ -10,6 +10,9 @@ The csv will have a space res'd for the secret 8
 The program will add to the csv, the plaintext password and secret8. This will be turned off in production.
 The program can also be used to only input a password 7 and display a plaintext word.
 
+testmain728.py is for testing the model and bypassing the joys of needing to pass in parameters through 
+the command line.
+
 """
 #
 #
@@ -64,8 +67,24 @@ class CLIparams:
 
         cliargs = inputargs.parse_args()
         self.filename = cliargs.f
+        #testing
+        #self.filename = "testdata728.csv"
+       
+        self.pass7 = cliargs.p7
         self.cliDict={'IPADDRESS':cliargs.ip, 'TESTROUTER':cliargs.tr, 'LOG':cliargs.log , \
              'LOGFILE':cliargs.logfile ,'VERBOSE': cliargs.verbose, 'CHANGE':cliargs.change,'VERIFIY':cliargs.verify, 'FILENAME':cliargs.f ,'GUI':cliargs.gui}
+
+       
+    def setTestOptions(self):
+        """this is manually setting options that ought to be passed in from the command line.
+            It will probably be removed later.
+            This is called from Main, after options have been set in CLIparams Init"""
+        #self.filename="test.csv"
+        
+        
+        self.cliDict['IPADDRESS']=['192.168.20.1','192.168.0.1']
+        self.cliDict['TESTROUTER']= '192.168.20.1'
+
     
    
 
@@ -76,13 +95,13 @@ class CLIparams:
          print("plaintext is ", plaintext)
          return(plaintext)
 
-#End CLIparams
-
 def main():
     print("inside main fn")
     options=CLIparams()
+    options.setTestOptions()
     
-
+    for key in options.cliDict:
+        print("key ", key, "  ",options.cliDict[key])
     #print("manually setting options for testing")
     #options.setTestOptions()
     
@@ -96,34 +115,43 @@ def main():
         mainmodel = model.InitializeModel(options.cliDict)   
         view = viewCLI.UserPrompts() #login details is part of "view"
         loginID=view.getLoginID()
-        print("login id is ", loginID)
+        router = controller.RemoteRouter(loginID, options.cliDict['TESTROUTER'])
+        netobjgroup = model.NetworkObjectGroup(mainmodel.objdict)
+        router.ipaddy = '192.168.20.1'
+        router.connectToRouter()
+        newlist = router.namelist
+        for element in newlist:
+            if element[1]:
+                element[2]=decode(element[1])
+            print(element, "\n")
 
-
-        if options.cliDict[IPADDRESS] :
-            initialDict=mainmodel.objdict
-            print("initial dictionary is ", initialDict)
-            if not options.tr:
-                options.tr = options.iplist[0] 
-            if not options.filename: #IP but no filename
-                testfilename = view.suggestFilename()
+        # if options.iplist :
+        #     initialDict=mainmodel.objdict
+        #     print("initial dictionary is ", initialDict)
+        #     if not options.tr:
+        #         options.tr = options.iplist[0] 
+        #     if not options.filename: #IP but no filename
+        #         testfilename = view.suggestFilename()
+                
+        # elif options.iplist: # no filename
            
-            print("suggested filename ", testfilename)
-            createYN = view.createFileYN(newfile=testfilename)
-            if createYN.uppper() == "Y":
-                print("program will create the file ", testfilename)
-                mainmodel.filename = testfilename
-                mainmodel.createFile()
-            else:
-                print("alrighty then. The program will go on without creating the file")    
+        #     print("suggested filename ", testfilename)
+        #     createYN = view.createFileYN(newfile=testfilename)
+        #     if createYN.uppper() == "Y":
+        #         print("program will create the file ", testfilename)
+        #         mainmodel.filename = testfilename
+        #         mainmodel.createFile()
+        #     else:
+        #         print("alrighty then. The program will go on without creating the file")    
 
 
-        elif options.filename: # filename but no IP Addresses     
-            pass
+        # elif options.filename: # filename but no IP Addresses     
+        #     pass
 
              
-        else: #no IP and no filename - prompt user for router IP
-            pass
-#END MAIN
+        # else: #no IP and no filename - prompt user for router IP
+        #     pass
+
 
 if __name__ == "__main__":
     print("startiing from __main__")

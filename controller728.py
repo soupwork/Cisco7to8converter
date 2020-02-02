@@ -14,7 +14,8 @@ class RemoteRouter():
         print("testrouter is ",self.testrouter)
         self.loginuser=loginID[0]
         self.loginpass=loginID[1]
-        
+        testroutername = self.getHostname(testrouter)
+        print("testrouter is ", testroutername)
         
   
     def getHostname(self,ipaddy):
@@ -27,11 +28,24 @@ class RemoteRouter():
 
         net_connect = netmiko.ConnectHandler (**cisco)
         print(net_connect.find_prompt())
-        hostname = net_connect.send_command('sh run | inc host')
-        print("hostname is ", hostname)
+        privlevel=net_connect.send_command('show priv')
+        print(privlevel)
+        if privlevel=="Current privilege level is 15":
+            hostname = net_connect.send_command('sh run | inc host')
+            print("hostname is ", hostname)
+        else:
+            print("insufficient Privilege Level")  
+            hostname=''  
         return(hostname)
+        
 
     def connectToRouter(self):
+#username Username06 privilege 15 password 7 107E080A16001D1908547C
+#username Username07 privilege 15 secret 8 $8$F/w85a6wmpTYZk$ZQOonJGorZG9GMhX2eMUtChZmumf/wWRglqt8XFUUOk
+#all usernames will start with "username ". slice off first 10 chars, then go to next space.
+#"secret 8"(with the space) means I am not just flagging on the word secret in a username or other field
+#
+        self.namelist = []
         cisco = {
             'device_type': 'cisco_ios',
             'host': self.ipaddy,
@@ -49,24 +63,30 @@ class RemoteRouter():
         usernames = self.getUsernames(net_connect)
         count=0
         for uname in usernames:
-            print("username is ", uname)
+            uname = uname[9:]
+            space = uname.index(' ')
+            print("username is ", uname[:space])
             if "doug.sheehan" in uname:
                 print("i'll delete this element")
 
-            if "secret" in uname:
+            if "secret 8" in uname or "secret 5" in uname:
                 print("discard username ", uname, " with secret assigned")
                 del usernames[count]
 
             if "password 7" in uname:
                 print("I'll convert this username/Password 7")
+                index7 = uname.index("password 7") + 11
+                element=[uname[:space],uname[index7:],'']
+                print(element)
+                self.namelist.append(element)
 
             if "password 0" in uname:
                 print("I'll convert the plaintext password") 
 
             count+=1 
 
-        print(usernames)  
-        return(hostname,usernames)               
+        print(self.namelist)  
+        return               
 
 
     def ShowVer(self,net_connect):
