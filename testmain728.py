@@ -15,7 +15,7 @@ the command line.
 
 """
 #
-#
+#filename should just be a csv list of target ip addresses
 #Sample input lines
 #
 # python main728.py -f "e:\dougsprogs\Convert728\convert7to8PKG\\testdata728.csv"
@@ -80,26 +80,56 @@ class CLIparams:
             It will probably be removed later.
             This is called from Main, after options have been set in CLIparams Init"""
         #self.filename="test.csv"
-        
-        
-        self.cliDict['IPADDRESS']=['192.168.20.1','192.168.0.1']
-        self.cliDict['TESTROUTER']= '192.168.20.1'
+        #self.pass7 = '122D0E023C2C1A303D'
+        #self.cliDict['IPADDRESS']=['192.168.20.1','192.168.20.1']
+        #self.cliDict['TESTROUTER']= '192.168.20.1'
 
-    
-   
+    def evalIPListAndFilenameTR(self,model):
+        """this fn is to do a quick check on ip list and filename parms, and set TR if needed
+            the order of evaluation is what I expect most, down to what I expect least"""
+        self.fileOrIPorTR = True
+
+        #no filename, no ip address,
+        if not self.cliDict['FILENAME'] and not self.cliDict['IPADDRESS']:
+            if self.cliDict['TESTROUTER']:
+                self.cliDict['IPADDRESS'] = self.cliDict['TESTROUTER']
+            else: # No filename,no ip address, no test router
+                self.fileOrIPorTR=False
+
+        elif self.cliDict['FILENAME'] and not self.cliDict['IPADDRESS']:
+            """load up to 500 ip addresses from filename"""
+            linecount = model.loadMaxIPlist(self.cliDict['FILENAME'])
+            self.cliDict['IPADDRESS'] = model.objdict['IPADDRESS']
+
+        print("self.cliDict['IPADDRESS'] should have a value by now,unless all three were blank.")
+        print(self.cliDict['IPADDRESS'])
+
+        if not self.cliDict['TESTROUTER'] and self.cliDict['IPADDRESS']:  #no TestRotuter Defined
+            self.cliDict['TESTROUTER'] = '0.0.0.0'
+            self.cliDict['TESTROUTER'] =  self.cliDict['IPADDRESS'][0]
+            print(self.cliDict['TESTROUTER'])
+            
+        
+        print("testrouter is ", self.cliDict['TESTROUTER'])    
+        #else: #testrouter is provided
+           # pass
+        return(self.fileOrIPorTR)
 
     def showPW7(self):
-         print("show PW7")
-         plaintext = decode(self.pass7)
-         getlogin=False
-         print("plaintext is ", plaintext)
-         return(plaintext)
+        print("show PW7")
+        plaintext = decode(self.pass7)
+        getlogin=False
+        print("pass 7 is ", self.pass7)
+        print("plaintext is ", plaintext)
+        return(plaintext)
 
 def main():
     print("inside main fn")
     options=CLIparams()
-    options.setTestOptions()
-    
+    #*************************
+    #options.setTestOptions()
+    #*************************
+
     for key in options.cliDict:
         print("key ", key, "  ",options.cliDict[key])
     #print("manually setting options for testing")
@@ -113,44 +143,32 @@ def main():
 
     else:   #password7 option does not have a value 
         mainmodel = model.InitializeModel(options.cliDict)   
-        view = viewCLI.UserPrompts() #login details is part of "view"
-        loginID=view.getLoginID()
-        router = controller.RemoteRouter(loginID, options.cliDict['TESTROUTER'])
-        netobjgroup = model.NetworkObjectGroup(mainmodel.objdict)
-        router.ipaddy = '192.168.20.1'
-        router.connectToRouter()
-        newlist = router.namelist
-        for element in newlist:
-            if element[1]:
-                element[2]=decode(element[1])
-            print(element, "\n")
+        
+        view = viewCLI.UserPrompts() 
+        options.evalIPListAndFilenameTR(mainmodel)
+        if not options.fileOrIPorTR:
+            choice = view.noFileNoList()
+            
+            if choice[0] == "ip":
+               options.cliDict['IPADDRESS'] = choice[1]
+            if choice[0] == "filename":
+                options.cliDict['FILENAME'] = choice[1]
+            options.evalIPListAndFilenameTR(mainmodel)
 
-        # if options.iplist :
-        #     initialDict=mainmodel.objdict
-        #     print("initial dictionary is ", initialDict)
-        #     if not options.tr:
-        #         options.tr = options.iplist[0] 
-        #     if not options.filename: #IP but no filename
-        #         testfilename = view.suggestFilename()
-                
-        # elif options.iplist: # no filename
-           
-        #     print("suggested filename ", testfilename)
-        #     createYN = view.createFileYN(newfile=testfilename)
-        #     if createYN.uppper() == "Y":
-        #         print("program will create the file ", testfilename)
-        #         mainmodel.filename = testfilename
-        #         mainmodel.createFile()
-        #     else:
-        #         print("alrighty then. The program will go on without creating the file")    
+        #loginID=view.getLoginID()
+        # router = controller.RemoteRouter(loginID, options.cliDict['TESTROUTER'])
 
+        # netobjgroup = model.NetworkObjectGroup(mainmodel.objdict)
 
-        # elif options.filename: # filename but no IP Addresses     
-        #     pass
+        # router.ipaddy = '192.168.20.1'
+        # router.connectToRouter()
+        # newlist = router.namelist
+        # for element in newlist:
+        #     if element[1]:
+        #         element[2]=decode(element[1])
+        #     print(element, "\n")
 
-             
-        # else: #no IP and no filename - prompt user for router IP
-        #     pass
+       
 
 
 if __name__ == "__main__":

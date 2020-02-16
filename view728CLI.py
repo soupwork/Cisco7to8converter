@@ -7,11 +7,16 @@ import os.path
 
 class UserPrompts:
     def __init__(self):
+        # self.username = input("enter the username to authenticate to router/switch: ")
+        # self.pword=getpass.getpass("please enter password <hidden> :")
+        # print ("username is :", self.username)
+        print("init UserPrompts")
+
+    def getLoginID(self):
         self.username = input("enter the username to authenticate to router/switch: ")
         self.pword=getpass.getpass("please enter password <hidden> :")
         print ("username is :", self.username)
 
-    def getLoginID(self):
         return(self.username,self.pword)
     
     def suggestFilename(self):
@@ -45,13 +50,29 @@ class UserPrompts:
         createYN = input("Would you like the program to create it? Y/N ")
         return(createYN)
 
+    #def chooseFileAndList():
+    def noFileNoList(self):
+        """ Prompt user because no Filename, no IP Address and No Testrouter   """
+        iplist = []
+        filename=''
+        print("No filename and no IP address is detected by the program")
+        choose=input("do you want to enter a filename (f) or a IP Address (ip)?")
+        if choose == 'ip':
+            iplist = input("please enter the ip address, or comma separated list of IPs.  ")
+            choice = ("ip",iplist)
+        elif choose == 'f' :
+            filename =  input("please enter the csv filename with the ip addresses to be checked - ")
+            choice = ("filename",filename)
+        return(choice)
 
 if __name__ == "__main__":
     print ("CLI view is main")
     testview = UserPrompts()
-    newname = testview.suggestFilename()
-    print("pwd is ", os.getcwd())
-    with open(newname , 'a') as outfile:
-        outfile.write("testline \n")
+    # newname = testview.suggestFilename()
+    # print("pwd is ", os.getcwd())
+    # with open(newname , 'a') as outfile:
+    #     outfile.write("testline \n")
     #testYN = testview.createFileYN(newfile=newname)
+    viewchoice = testview.noFileNoList()
+    print(viewchoice)
     

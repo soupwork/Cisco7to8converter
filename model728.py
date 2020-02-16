@@ -57,7 +57,7 @@ class NetworkObject:
         print("IP Address is ",self.netobjDict['IPADDRESS'])
         print("Verbose messages is ", self.netobjDict['VERBOSE'])
         print("Log messages is ", self.netobjDict['LOG'])
-        
+        print("Username is ", self.netobjDict['ORIGUSERNAME'])
     def checkUsername(self, username):
         pass
     
@@ -65,20 +65,20 @@ class NetworkObject:
         pass
 
     def prepareUsernameCommand(self):
-        self.netobjDict[TESTUSERNAME] = elf.netobjDict[',ORIGUSERNAME'] + '_TEST'
+        self.netobjDict[TESTUSERNAME] = self.netobjDict[',ORIGUSERNAME'] + '_TEST'
         usernamecommand = 'username {0} algorithm-type sha256 secret {1}' \
             .format(self.netobjDict['ORIGUSERNAME'],self.netobjDict['PLAINTEXT'] )
         testusernamecommand = 'username {0} priv 15 algorithm-type sha256 secret {1}' \
             .format(self.netobjDict['TESTUSERNAME'],self.netobjDict['PLAINTEXT'] )
-        print(tempusernamecommand, " \n to be used on testrouter")
-        return(tempusernamecommand)
+
+        print(testusernamecommand, " \n to be used on testrouter")
+        return(testusernamecommand)
         # username newuser privilege 15 algorithm-type sha256 secret plaintext  
         # username {} priv 15 algorithm-type sha256 secret {}    
 
 
 
 
-    """I know it is not pythonic to use getters and setters, but it fits so well here, i'll use it anyway"""
     def showPass7(self):
         return(self.netobjDict['PASSWORD7'])
 
@@ -90,8 +90,8 @@ class NetworkObject:
 
 
 class NetworkObjectGroup:
-    """main instantiates Network Object Group Object (NetObjGroup)
-    input needs initial dictionary, and filename/
+    """main instantiates Network Object Group Object (netobjgroup)
+    input needs initial dictionary, from InitializeModel (passed through main)
     Create list with up to max_elements from filename. Find length of file.
     create pointer for list, create pointer for file if longer than 500 rows
     load next 500 rows if needed
@@ -102,13 +102,16 @@ class NetworkObjectGroup:
 
     def __init__(self, initDict):
         """
-          init needs a filename and the initial dictionary. 
+         initial dictionary from main(this is objDict from init.model). 
           create list of up to max_elements rows from filename. create pointer for list
           return dict with new row data.
         """
 
-        # self.filename = filename
-        # print("filename is ",filename)
+        self.netObjCount = 0
+        self.ipindex=0
+        self.iplist = initDict['IPADDRESS']
+        for ip in iplist:
+            print("New Network Object will be ", "netobj_" + self.netObjCount)
         # self.workingDict = initDict
         # self.workingList = [] #working list will be all the elements 
         # self.iplist = [] #ip list is only ip addresses
@@ -117,7 +120,15 @@ class NetworkObjectGroup:
         for index in initDict:
             print(index, " , ", initDict[index])
         
-        
+    def getNextIP(self): 
+        if self.ipindex < len(self.iplist):
+            nextIP = self.iplist[self.ipindex]   
+            self.ipindex +=1
+            print("next IP Address is ", nextIP)
+        else: 
+            nextIP=''    
+            print("no more IP's")
+        return(nextIP)
         #blah. I need to check if ip addresses are passed in to take priority over filenames.
         # Change for this will start in Main
         # if self.filename:  #filename is not blank
@@ -201,7 +212,7 @@ class InitializeModel():
 
             for key in self.objdict:
                 
-                self.objdict[key]= valuelist[index]
+                self.objdict[key]= valuestring[index]
                 index += 1
             #end for loop through dict keys
         else: 
@@ -236,8 +247,8 @@ class InitializeModel():
 
             if miscount == 0:
                 print("all Columns found. Thank you.")
-            elif (miscount == 11) and ("IPADDRESS" in headerdict):
-                print("Found IP Address column. program will add additional columns")
+           # elif (miscount == 11) and ("IPADDRESS" in ):
+           #     print("Found IP Address column. program will add additional columns")
             elif miscount > 11:
                 print("Could not locate Header Row")
             elif miscount > 0:
@@ -246,7 +257,27 @@ class InitializeModel():
          
         #end file check on filename    
 
+    def loadMaxIPlist(self, filename):
+        """this will load up to first 500 ip's into dict-ip address list and give a count of number
+            of ip addresses in list"""
+        #I need to put this in a try/catch block later   
+        
+        maxIPlist=10
+        linecount=0    
+        iplist=[]
+        with open(filename, 'r') as infile:
+            element = infile.readline()
+            while element:
+                
+                linecount +=1
+                if linecount < maxIPlist:
+                    iplist.append(element)
+                element = infile.readline()
+ 
+        self.objdict['IPADDRESS']=iplist
+        print("Loaded ", linecount, " ip addresses")
 
+        return(linecount)        
 
     def checkFilename(self):
         """don't create the network object group until filename is checked
@@ -306,13 +337,13 @@ class InitializeModel():
 
 if __name__ == "__main__":
     print("starting from model")
-    
+    testfilename = "testIPlist2.csv"
     #testfilename="e:/dougsprogs/Convert728/convert7to8PKG/testdata728.csv"
     #testfilename="e:\dougsprogs\Convert728\convert7to8PKG\\testdata728.csv"
     #testfilename="testdata728.csv"  #this is a real file with some data
     #testfilename="testblank728.csv"  #this is a real file with no data
     #testfilename="testempty728.csv" #this is not an existing file
-    testfilename=""                 #this is an empty filename
+    #testfilename=""                 #this is an empty filename
     #dataobject=convert_model(testfilename)
     #password7="111918160405041E007A7A"
     #plaintext=dataobject.decrypt(password7)
@@ -327,4 +358,7 @@ if __name__ == "__main__":
     testdict = {'HOSTNAME':'testhostname','IPADDRESS':'192.168.20.1','LOG':'n','VERBOSE':'n','ORIGUSERNAME':
     'Username01','TESTUSERNAME':'', 'PASSWORD7':'053B071C325B411B1D5546','PLAINTEXT':'','SECRET8':'','CHANGE':'y','VERIFIED':'','NOTES-AND-ERRORS':''}
     newmodel = InitializeModel(testdict)
-    #netobj001 = NetworkObject(testdict)    
+    linecount = newmodel.loadMaxIPlist(testfilename)
+    print("linecount is ",linecount)
+    for ip in newmodel.objdict['IPADDRESS']:
+        print("IP Address is ", ip)
