@@ -35,7 +35,9 @@ import convert7to8PKG.model728 as model
 import convert7to8PKG.view728CLI as viewCLI
 import convert7to8PKG.controller728 as controller
 
-
+class MainComms:
+    def callView(self, message):
+       pass 
 
 class CLIparams:
     def __init__(self):
@@ -81,7 +83,7 @@ class CLIparams:
             This is called from Main, after options have been set in CLIparams Init"""
         #self.filename="test.csv"
         #self.pass7 = '122D0E023C2C1A303D'
-        #self.cliDict['IPADDRESS']=['192.168.20.1','192.168.20.1']
+        self.cliDict['IPADDRESS']=['192.168.20.1','192.168.20.1']
         #self.cliDict['TESTROUTER']= '192.168.20.1'
 
     def evalIPListAndFilenameTR(self,model):
@@ -93,6 +95,8 @@ class CLIparams:
         if not self.cliDict['FILENAME'] and not self.cliDict['IPADDRESS']:
             if self.cliDict['TESTROUTER']:
                 self.cliDict['IPADDRESS'] = self.cliDict['TESTROUTER']
+                model.objdict['IPADDRESS'] = self.cliDict['TESTROUTER']
+
             else: # No filename,no ip address, no test router
                 self.fileOrIPorTR=False
 
@@ -101,11 +105,7 @@ class CLIparams:
             linecount = model.loadMaxIPlist(self.cliDict['FILENAME'])
             self.cliDict['IPADDRESS'] = model.objdict['IPADDRESS']
 
-        print("self.cliDict['IPADDRESS'] should have a value by now,unless all three were blank.")
-        print(self.cliDict['IPADDRESS'])
-
         if not self.cliDict['TESTROUTER'] and self.cliDict['IPADDRESS']:  #no TestRotuter Defined
-            self.cliDict['TESTROUTER'] = '0.0.0.0'
             self.cliDict['TESTROUTER'] =  self.cliDict['IPADDRESS'][0]
             print(self.cliDict['TESTROUTER'])
             
@@ -123,11 +123,23 @@ class CLIparams:
         print("plaintext is ", plaintext)
         return(plaintext)
 
+def testfn(message):
+    print("inside Test Function")
+    print("message is ", message)
+
+def clearNetObjDict():
+    blankNetObjDict = {'HOSTNAME':'','IPADDRESS':'','LOG':'','VERBOSE':'','ORIGUSERNAME':'','TESTUSERNAME':'', \
+            'PASSWORD7':'','PLAINTEXT':'','SECRET8':'','CHANGE':'','VERIFIED':'','NOTES-AND-ERRORS':''} 
+    return(blankNetObjDict)   
+
+
 def main():
     print("inside main fn")
+    netObjDict=clearNetObjDict()
+
     options=CLIparams()
     #*************************
-    #options.setTestOptions()
+    options.setTestOptions()
     #*************************
 
     for key in options.cliDict:
@@ -146,7 +158,7 @@ def main():
         
         view = viewCLI.UserPrompts() 
         options.evalIPListAndFilenameTR(mainmodel)
-        if not options.fileOrIPorTR:
+        if not options.fileOrIPorTR: #no filename, no ip, no test router
             choice = view.noFileNoList()
             
             if choice[0] == "ip":
@@ -154,21 +166,25 @@ def main():
             if choice[0] == "filename":
                 options.cliDict['FILENAME'] = choice[1]
             options.evalIPListAndFilenameTR(mainmodel)
+        #At this point, main should have a 1 or more element list of IP's
+        loginID=view.getLoginID()
+        router = controller.RemoteRouter(loginID, options.cliDict['TESTROUTER'])
+        #create the Network Object Group
+        netobjgroup = model.NetworkObjectGroup(mainmodel.objdict)
 
-        #loginID=view.getLoginID()
-        # router = controller.RemoteRouter(loginID, options.cliDict['TESTROUTER'])
+        for addy in options.cliDict['IPADDRESS']:
+            router.connectToRouter(addy)
+            #now controller has a list of usernames in  router.namelist [username,pass7]
+           
+            netObjDict['HOSTNAME'] = router.hostname
+            netObjDict['IPADDRESS'] = router.ipaddy
 
-        # netobjgroup = model.NetworkObjectGroup(mainmodel.objdict)
-
-        # router.ipaddy = '192.168.20.1'
-        # router.connectToRouter()
-        # newlist = router.namelist
-        # for element in newlist:
-        #     if element[1]:
-        #         element[2]=decode(element[1])
-        #     print(element, "\n")
-
-       
+            for username in router.namelist:
+                netObjDict['ORIGUSERNAME'] = username[0]
+                netObjDict['PASSWORD7'] = username[1]
+                netObjDict['PLAINTEXT'] = decode(netObjDict['PASSWORD7'])
+                #decoding the password is working. now I need to send this dict to netobjgroup
+                #to create a new net obj
 
 
 if __name__ == "__main__":

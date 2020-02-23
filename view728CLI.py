@@ -65,6 +65,11 @@ class UserPrompts:
             choice = ("filename",filename)
         return(choice)
 
+
+    def showmessage(self, message):
+        print("Inside view-showmessage")   
+        print(message) 
+
 if __name__ == "__main__":
     print ("CLI view is main")
     testview = UserPrompts()
@@ -73,6 +78,7 @@ if __name__ == "__main__":
     # with open(newname , 'a') as outfile:
     #     outfile.write("testline \n")
     #testYN = testview.createFileYN(newfile=newname)
-    viewchoice = testview.noFileNoList()
-    print(viewchoice)
+    #viewchoice = testview.noFileNoList()
+    #print(viewchoice)
+    testview.showmessage("this is a test message")
     

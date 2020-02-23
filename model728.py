@@ -110,16 +110,16 @@ class NetworkObjectGroup:
         self.netObjCount = 0
         self.ipindex=0
         self.iplist = initDict['IPADDRESS']
-        for ip in iplist:
-            print("New Network Object will be ", "netobj_" + self.netObjCount)
-        # self.workingDict = initDict
-        # self.workingList = [] #working list will be all the elements 
-        # self.iplist = [] #ip list is only ip addresses
-        # self.rowcount = 0
-        # self.rowpointer
-        for index in initDict:
-            print(index, " , ", initDict[index])
-        
+        self.netObjList=[]
+
+    
+         #   print("Network Object will be ", "netobj_" + self.netObjCount)
+
+            #now i need to ssh into ip address and find out how many usernames are there.
+
+    def createNetObjs(self,netObjDict):
+        pass
+               
     def getNextIP(self): 
         if self.ipindex < len(self.iplist):
             nextIP = self.iplist[self.ipindex]   
@@ -129,26 +129,7 @@ class NetworkObjectGroup:
             nextIP=''    
             print("no more IP's")
         return(nextIP)
-        #blah. I need to check if ip addresses are passed in to take priority over filenames.
-        # Change for this will start in Main
-        # if self.filename:  #filename is not blank
-        #     with open(self.filename, 'r') as readfile:
-        #         rowstring = readfile.readline() #first read should be the headers
-        #         while rowstring : #rowstring will be -1 at the end of the file
-        #             rowstring = readfile.readline() #rowstring false(-1) when line is blank
-        #             rowcount += 1
-        #             if rowstring and (rowcount < maxlines):
-        #                 self.workinglist.append(rowstring)
-        #                 print("new list entry ", rowstring)
-        # else:   #filename is blank
-        #     self.iplist=ip
-
-        #load first IP (test router) into the dict.
-
-    
-              
-
-           
+         
 
     def nextRow(self):
         """ this will load the next row into the workingDict and pass back to main"""
@@ -288,7 +269,7 @@ class InitializeModel():
             how many rows is the file? can I load in memory or take it in chunks?
         """
         
-    
+        #all this should be in the view
 
         print("working directory ", self.path) 
         print("If you'd like to use another directory/folder, please include the full path with the filename.")
