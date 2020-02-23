@@ -82,12 +82,9 @@ Command Line Options/Flags
 	combination are working after being changed. Since this is changing local
 	usernames/passwords, it won't work with TACACS or Radius.
 		
--f filename > this option imports a csv file. The first row is headers (not data)
-	If included, the second row will be used as the test router.
-	this option can be used in two ways. If IP addresses are provided
-	(below 2nd row) then the new usernames/passwords will be appended to the 
-	bottom of the file.  If no ip addresses are specified, the program will go 
-	through the IP addresses in the file and search for passwords and password 7's.
+-f filename > this option imports a csv file. Please make it a simple list of IP's. 
+	No headers. Just a single column of target IP's. If testrouter is not 
+	specified, the program will use the first IP from this list as the testrouter.
 	
 -ip IP Address > this option will let user set one or more IP Addresses. Each IP
 	address will need to have its own -ip
