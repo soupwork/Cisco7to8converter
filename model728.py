@@ -54,10 +54,11 @@ class NetworkObject:
             have any password 7's, in which case "No Password 7" will be in the notes field."""
             
         self.netobjDict=netobjDict
-        print("IP Address is ",self.netobjDict['IPADDRESS'])
-        print("Verbose messages is ", self.netobjDict['VERBOSE'])
-        print("Log messages is ", self.netobjDict['LOG'])
-        print("Username is ", self.netobjDict['ORIGUSERNAME'])
+        #print("IP Address is ",self.netobjDict['IPADDRESS'])
+        #print("Verbose messages is ", self.netobjDict['VERBOSE'])
+        #print("Log messages is ", self.netobjDict['LOG'])
+        #print("Username is ", self.netobjDict['ORIGUSERNAME'])
+
     def checkUsername(self, username):
         pass
     
@@ -65,14 +66,18 @@ class NetworkObject:
         pass
 
     def prepareUsernameCommand(self):
-        self.netobjDict[TESTUSERNAME] = self.netobjDict[',ORIGUSERNAME'] + '_TEST'
-        usernamecommand = 'username {0} algorithm-type sha256 secret {1}' \
+       
+        self.netobjDict['TESTUSERNAME'] =  self.netobjDict['ORIGUSERNAME'] + '_TEST'
+        self.usernamecommand = 'username {0} algorithm-type sha256 secret {1}' \
             .format(self.netobjDict['ORIGUSERNAME'],self.netobjDict['PLAINTEXT'] )
-        testusernamecommand = 'username {0} priv 15 algorithm-type sha256 secret {1}' \
+        self.testusernamecommand = 'username {0} priv 15 algorithm-type sha256 secret {1}' \
             .format(self.netobjDict['TESTUSERNAME'],self.netobjDict['PLAINTEXT'] )
-
-        print(testusernamecommand, " \n to be used on testrouter")
-        return(testusernamecommand)
+        for key in self.netobjDict:
+            print("key ", key, "value ", self.netobjDict[key])
+        
+        print(self.testusernamecommand, " \n to be used on testrouter")
+        # return(testusernamecommand)
+        return(self.testusernamecommand)
         # username newuser privilege 15 algorithm-type sha256 secret plaintext  
         # username {} priv 15 algorithm-type sha256 secret {}    
 
@@ -93,8 +98,8 @@ class NetworkObjectGroup:
     """main instantiates Network Object Group Object (netobjgroup)
     input needs initial dictionary, from InitializeModel (passed through main)
     Create list with up to max_elements from filename. Find length of file.
-    create pointer for list, create pointer for file if longer than 500 rows
-    load next 500 rows if needed
+    create pointer for list, create pointer for file if longer than max_elements rows
+    load next max_elements rows if needed
     keep track of updates to plaintext, secret 8, notes, etc.
     update log/verbose if selected.
     """
@@ -118,22 +123,17 @@ class NetworkObjectGroup:
             #now i need to ssh into ip address and find out how many usernames are there.
 
     def createNetObjs(self,netObjDict):
-        pass
-               
-    def getNextIP(self): 
-        if self.ipindex < len(self.iplist):
-            nextIP = self.iplist[self.ipindex]   
-            self.ipindex +=1
-            print("next IP Address is ", nextIP)
-        else: 
-            nextIP=''    
-            print("no more IP's")
-        return(nextIP)
-         
+        newNetObj = NetworkObject(netObjDict)
+        
+        newNetObj.prepareUsernameCommand()
+        self.netObjList.append(newNetObj)
+        print("length of NetObjList is ", len(self.netObjList))
 
-    def nextRow(self):
-        """ this will load the next row into the workingDict and pass back to main"""
-        pass
+    def showNetObjs(self):   
+        
+        for netobj in self.netObjList:
+            print(netobj.netobjDict['ORIGUSERNAME'])
+   
 
 
     
@@ -337,9 +337,10 @@ if __name__ == "__main__":
 
     #2020 feb 1st testing  Network Objects
     testdict = {'HOSTNAME':'testhostname','IPADDRESS':'192.168.20.1','LOG':'n','VERBOSE':'n','ORIGUSERNAME':
-    'Username01','TESTUSERNAME':'', 'PASSWORD7':'053B071C325B411B1D5546','PLAINTEXT':'','SECRET8':'','CHANGE':'y','VERIFIED':'','NOTES-AND-ERRORS':''}
-    newmodel = InitializeModel(testdict)
-    linecount = newmodel.loadMaxIPlist(testfilename)
-    print("linecount is ",linecount)
-    for ip in newmodel.objdict['IPADDRESS']:
-        print("IP Address is ", ip)
+    'Username01','TESTUSERNAME':'', 'PASSWORD7':'053B071C325B411B1D5546','PLAINTEXT':'password','SECRET8':'','CHANGE':'y','VERIFIED':'','NOTES-AND-ERRORS':''}
+    testnetobjgroup = NetworkObjectGroup(testdict)
+    testnetobjgroup.createNetObjs(testdict)
+    testnetobjgroup.createNetObjs(testdict)
+    testnetobjgroup.createNetObjs(testdict)
+    testnetobjgroup.createNetObjs(testdict)
+    testnetobjgroup.showNetObjs()

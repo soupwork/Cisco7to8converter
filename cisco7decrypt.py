@@ -5,6 +5,7 @@
 
 def decode  (pw):
     print("inside decode method")
+   
     salt = 'dsfd;kfoA,.iyewrkldJKDHSUBsgvca69834ncxv9873254k;fg87'
     # The first 2 digits represent the salt index salt[index]
     index = int(pw[:2])
@@ -31,8 +32,8 @@ def decode  (pw):
         # Get the char for the XOR'ed INT and append it to the cleartext List
         cleartext.append(chr(cleartext_char))
     
-    print(''.join(cleartext) ," is inside decode")
-    return ''.join(cleartext)
+    #print(''.join(cleartext) ," is inside decode")
+    return (''.join(cleartext))
     #   print(decrypt_type7(pw))
     #return("blanktext")
 

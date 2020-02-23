@@ -144,10 +144,7 @@ def main():
 
     for key in options.cliDict:
         print("key ", key, "  ",options.cliDict[key])
-    #print("manually setting options for testing")
-    #options.setTestOptions()
-    
-   
+    #
 
     if options.pass7:
         print("Program is decrypting")
@@ -183,10 +180,10 @@ def main():
                 netObjDict['ORIGUSERNAME'] = username[0]
                 netObjDict['PASSWORD7'] = username[1]
                 netObjDict['PLAINTEXT'] = decode(netObjDict['PASSWORD7'])
-                #decoding the password is working. now I need to send this dict to netobjgroup
-                #to create a new net obj
-
-
+                netobjgroup.createNetObjs(netObjDict)
+                
+            #netobjgroup.showNetObjs()    
+#
 if __name__ == "__main__":
     print("startiing from __main__")
     main()  
