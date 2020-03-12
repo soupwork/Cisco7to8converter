@@ -125,10 +125,12 @@ class NetworkObjectGroup:
     def createNetObjs(self,netObjDict):
         newNetObj = NetworkObject(netObjDict)
         
-        newNetObj.prepareUsernameCommand()
+        testuserstring = newNetObj.prepareUsernameCommand()
         self.netObjList.append(newNetObj)
         print("length of NetObjList is ", len(self.netObjList))
+        return(testuserstring)
 
+        
     def showNetObjs(self):   
         
         for netobj in self.netObjList:
