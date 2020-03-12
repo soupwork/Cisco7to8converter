@@ -83,7 +83,8 @@ class CLIparams:
             This is called from Main, after options have been set in CLIparams Init"""
         #self.filename="test.csv"
         #self.pass7 = '122D0E023C2C1A303D'
-        self.cliDict['IPADDRESS']=['192.168.20.1','192.168.20.1']
+        #self.pass7 = '04481E'
+        self.cliDict['IPADDRESS']=['192.168.20.1']
         #self.cliDict['TESTROUTER']= '192.168.20.1'
 
     def evalIPListAndFilenameTR(self,model):
@@ -180,8 +181,10 @@ def main():
                 netObjDict['ORIGUSERNAME'] = username[0]
                 netObjDict['PASSWORD7'] = username[1]
                 netObjDict['PLAINTEXT'] = decode(netObjDict['PASSWORD7'])
-                netobjgroup.createNetObjs(netObjDict)
-                
+                testuserstring = netobjgroup.createNetObjs(netObjDict)
+                #create new test username on test router to create sha and verify
+                #router.newtestuser(netObjDict,testuserstring)
+                router.connectTestRouter(netObjDict,testuserstring)
             #netobjgroup.showNetObjs()    
 #
 if __name__ == "__main__":
